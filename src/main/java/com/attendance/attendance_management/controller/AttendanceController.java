@@ -15,7 +15,7 @@ public class AttendanceController {
 
         Map<String, String> response = new HashMap<>();
 
-        response.put("status", "Attendance Service Running");
+        response.put("status", "Attendance Service Running Successfully");
 
         return response;
     }
