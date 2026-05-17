@@ -1,6 +1,8 @@
 pipeline {
 
-    agent any
+    agent {
+        label 'built-in'
+    }
 
     environment {
         AWS_REGION = 'us-east-1'
@@ -11,7 +13,7 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git 'YOUR_GITHUB_REPO'
+                git 'https://github.com/arya-hadekar/attendance-management.git'
             }
         }
 
@@ -38,9 +40,9 @@ pipeline {
             steps {
 
                 withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-creds'
-                ]]) {
+                                         $class: 'AmazonWebServicesCredentialsBinding',
+                                         credentialsId: 'aws-creds'
+                                 ]]) {
 
                     sh '''
                     aws ecr get-login-password --region $AWS_REGION | \
@@ -49,7 +51,12 @@ pipeline {
                     docker tag attendance-app:${BUILD_NUMBER} \
                     $ECR_REPO:${BUILD_NUMBER}
 
+                    docker tag attendance-app:${BUILD_NUMBER} \
+                    $ECR_REPO:latest
+
                     docker push $ECR_REPO:${BUILD_NUMBER}
+
+                    docker push $ECR_REPO:latest
                     '''
                 }
             }
